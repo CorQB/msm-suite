@@ -28,7 +28,7 @@ else
     screen -d -m -S dsbot {exec &> logs/yarn.log; echo date; cd $SHULKERPATH; yarn start}
     echo "Verifying node started successfully..."
     
-        if pidof -x "dsbot >/dev/null; then
+        if pidof -x "dsbot" >/dev/null; then
         echo "Bot started correctly."
         else echo "Bot failed to start: check yarn.log for more information."
         fi
