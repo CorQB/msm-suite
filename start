@@ -15,7 +15,7 @@ RCONIP="localhost"
 RCONPORT="8000"
 SHULKERPATH="/opt/msm/discord/shulker/"
 
-exec &> dsbot.log
+exec &> logs/start.log
 echo date 
 echo "Beginning Log"
 
@@ -25,8 +25,8 @@ if pidof -x "dsbot" >/dev/null; then
     echo "Bot is already running. Everything is OK."
 else
     echo "Calling node.js..."
-    screen -d -m -S dsbot {exec &> yarn.log; echo date; cd $SHULKERPATH; yarn start}
-    echo "Verifying node started successfully:"
+    screen -d -m -S dsbot {exec &> logs/yarn.log; echo date; cd $SHULKERPATH; yarn start}
+    echo "Verifying node started successfully..."
     
         if pidof -x "dsbot >/dev/null; then
         echo "Bot started correctly."
@@ -40,7 +40,7 @@ if pidof -x "listener" >/dev/null; then
     echo "Listener is already running. Everything is OK."
 else
     echo "Starting listener..."
-    screen -d -m -S "listener" {exec &> listener.log; echo date; tail -F /$MCSERVER/logs/latest.log | \
+    screen -d -m -S "listener" {exec &> logs/listener.log; echo date; tail -F /$MCSERVER/logs/latest.log | \
     grep --line-buffered ": <" | while read x ; do echo -ne $x | \
     curl -X POST -d @- http://$RCONIP:$RCONPORT/minecraft/hook ; done}
     
