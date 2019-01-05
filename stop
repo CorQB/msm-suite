@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Filename: stop
+# Author: CorQB
+# Created: January 4, 2019
+# Modified: January 4, 2019
+
+# A simple script to STOP screen sessions started by START script. 
+# Appends a stopping message to the START script's logfile.
+
+exec &>> logfile
+
+echo "Halting Discord Bot."
+
+kill pidof -x "listener"
+kill pidof -x "dsbot"
+
+echo "Done. Everything is OK."
