@@ -1,7 +1,7 @@
 # Filename: start
 # Author: CorQB
 # Created: January 4, 2019
-# Modified: January 4, 2019
+# Modified: January 5, 2019
 #
 # This script is used to start two functions, 1) a command which listens to
 # an active log file and reports to 2) a bot which posts given strings from
@@ -15,6 +15,24 @@ RCONIP="localhost"
 RCONPORT="8000"
 SHULKERPATH="/opt/msm/discord/shulker/"
 
+# Functions to fall back on if command grouping isn't working
+#
+# Node-via-Yarn
+# yarnstart() { exec &> logs/yarn.log
+#                echo date
+#                cd $SHULKERPATH
+#                yarn start
+#                }
+#
+# listenerstart() { exec &> logs/listener.log
+#                    echo date
+#                    tail -F /$MCSERVER/logs/latest.log | /
+#                    grep --line-buffered ": <" | while read x ; do echo -ne $x | / 
+#                    curl -X POST -d @- http://$RCONIP:$RCONPORT/minecraft/hook ; done
+#                    }
+#                    
+
+
 exec &> logs/start.log
 echo date 
 echo "Beginning Log"
@@ -23,11 +41,14 @@ echo "Beginning Log"
 
 if pidof -x "dsbot" >/dev/null; then
     echo "Bot is already running. Everything is OK."
-else
+else {
     echo "Calling node.js..."
-    screen -d -m -S "dsbot" { exec &> logs/yarn.log ; echo date; cd $SHULKERPATH ; yarn start ; }
-    echo "Verifying node started successfully..."
-fi
+    screen -d -m -S "dsbot" { 
+    exec &> logs/yarn.log ; echo date ; cd $SHULKERPATH ; yarn start ; 
+    }
+} fi
+
+# Verify node start
 
 if pidof -x "dsbot" >/dev/null; then
 echo "Bot started correctly."
@@ -39,12 +60,16 @@ fi
 
 if pidof -x "listener" >/dev/null; then
     echo "Listener is already running. Everything is OK."
-else
+else {
     echo "Starting listener..."
-    screen -d -m -S "listener" { exec &> logs/listener.log ; echo date ; tail -F /$MCSERVER/logs/latest.log | 
+    screen -d -m -S "listener" { 
+    exec &> logs/listener.log ; echo date ; tail -F /$MCSERVER/logs/latest.log | 
     grep --line-buffered ": <" | while read x ; do echo -ne $x | 
-    curl -X POST -d @- http://$RCONIP:$RCONPORT/minecraft/hook ; done }
-fi
+    curl -X POST -d @- http://$RCONIP:$RCONPORT/minecraft/hook ; done 
+    }
+} fi
+
+# Verify listener start
 
 if pidof -x "listener" >/dev/null; then
 echo "Listener Started."
