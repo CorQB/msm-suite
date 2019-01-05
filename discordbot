@@ -1,6 +1,6 @@
 # Filename: discordbot
 # Author: CorQB
-# Date: January 4, 2019
+# Created: January 4, 2019
 # Modified: January 4, 2019
 #
 # This script is used to start two functions, 1) a command which listens to
@@ -9,6 +9,7 @@
 # https://github.com/destruc7i0n/shulker to make bot startup easier to automate.
 
 #Edit these values with your unique environment variables
+
 MCSERVER="/opt/msm/servers/webbcraft/"
 RCONIP="localhost"
 RCONPORT="8000"
