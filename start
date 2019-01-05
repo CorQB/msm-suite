@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Filename: start
 # Author: CorQB
 # Created: January 4, 2019
@@ -16,25 +18,21 @@ RCONPORT="8000"
 SHULKERPATH="/opt/msm/discord/shulker/"
 
 # Functions to fall back on if command grouping isn't working
-#
-# Node-via-Yarn
-# yarnstart() { exec &> logs/yarn.log
-#                echo date
-#                cd $SHULKERPATH
-#                yarn start
-#                }
-#
-# listenerstart() { exec &> logs/listener.log
-#                    echo date
-#                    tail -F /$MCSERVER/logs/latest.log | /
-#                    grep --line-buffered ": <" | while read x ; do echo -ne $x | / 
-#                    curl -X POST -d @- http://$RCONIP:$RCONPORT/minecraft/hook ; done
-#                    }
-#                    
 
-
-exec &> logs/start.log
-echo date 
+# Node-via-Yarn Function
+yarnstart() { exec &> logs/yarn.log
+                cd $SHULKERPATH
+                yarn start
+                }
+                
+# Listener Function
+listenerstart() { exec &> logs/listener.log
+                    tail -F /$MCSERVER/logs/latest.log | /
+                    grep --line-buffered ": <" | while read x ; do echo -ne $x | / 
+                    curl -X POST -d @- http://$RCONIP:$RCONPORT/minecraft/hook ; done
+                    }
+                    
+exec &> logs/start.log                     
 echo "Beginning Log"
 
 # Call node.js
@@ -43,11 +41,7 @@ if pidof -x "dsbot" >/dev/null; then
     echo "Bot is already running. Everything is OK."
 else
     echo "Calling node.js..."
-    screen -d -m -S "dsbot" { 
-        echo date
-        cd $SHULKERPATH
-        yarn start 
-    } &> logs/yarn.log
+    screen -d -m -S "dsbot" "$(yarnstart)"
 fi
 
 # Verify node start
@@ -64,12 +58,7 @@ if pidof -x "listener" >/dev/null; then
     echo "Listener is already running. Everything is OK."
 else
     echo "Starting listener..."
-    screen -d -m -S "listener" { 
-    echo date
-    tail -F /$MCSERVER/logs/latest.log | /
-    grep --line-buffered ": <" | while read x ; do echo -ne $x | /
-    curl -X POST -d @- http://$RCONIP:$RCONPORT/minecraft/hook ; done 
-    } &> logs/listener.log 
+    screen -d -m -S "listener" "$(listenerstart)"
 fi
 
 # Verify listener start
