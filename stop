@@ -8,9 +8,12 @@
 # A simple script to STOP screen sessions started by START script. 
 # Appends a stopping message to the START script's logfile.
 
-exec &>> dsbot.log
-
+exec &>> logs/start.log
+echo "---------------------------STOPPING--------------------------------"
+echo date
+echo ""
 echo "Halting Discord Bot."
+echo "Issuing STOP command."
 
 # pseudo - update with proper kill commands
 # kill "listener"
