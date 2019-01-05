@@ -15,7 +15,7 @@ RCONIP="localhost"
 RCONPORT="8000"
 SHULKERPATH="/opt/msm/discord/shulker/"
 
-exec &> logfile.log
+exec &> dsbot.log
 echo date 
 echo "Beginning Log"
 
