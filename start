@@ -12,36 +12,33 @@
 
 #Edit these values with your unique environment variables
 
-MCSERVER="/opt/msm/servers/webbcraft/"
+exec &> logs/start.log
+echo "Beginning Log"
+
+MCSERVER="/opt/msm/servers/webbcraft"
 RCONIP="localhost"
 RCONPORT="8000"
-SHULKERPATH="/opt/msm/discord/shulker/"
+SHULKERPATH="/opt/msm/discord/shulker"
+PATHTOSTART="/opt/msm/bin"
 
-# Functions to fall back on if command grouping isn't working
 
 # Node-via-Yarn Function
-yarnstart() { exec &> logs/yarn.log
-                cd $SHULKERPATH
+yarnstart() {   cd $SHULKERPATH
                 yarn start
                 }
                 
 # Listener Function
-listenerstart() { exec &> logs/listener.log
-                    tail -F /$MCSERVER/logs/latest.log | /
-                    grep --line-buffered ": <" | while read x ; do echo -ne $x | / 
+listenerstart() {   tail -F /$MCSERVER/logs/latest.log | grep --line-buffered ": <" | while read x ; do echo -ne $x | \
                     curl -X POST -d @- http://$RCONIP:$RCONPORT/minecraft/hook ; done
                     }
                     
-exec &> logs/start.log                     
-echo "Beginning Log"
-
 # Call node.js
 
 if pidof -x "dsbot" >/dev/null; then
     echo "Bot is already running. Everything is OK."
 else
     echo "Calling node.js..."
-    screen -d -m -S "dsbot" "$(yarnstart)"
+    screen -d -m -S "dsbot" yarnstart
 fi
 
 # Verify node start
@@ -58,7 +55,7 @@ if pidof -x "listener" >/dev/null; then
     echo "Listener is already running. Everything is OK."
 else
     echo "Starting listener..."
-    screen -d -m -S "listener" "$(listenerstart)"
+    screen -d -m -S "listener" listenerstart
 fi
 
 # Verify listener start
@@ -67,5 +64,3 @@ if pidof -x "listener" >/dev/null; then
 echo "Listener Started."
 else echo "Error: Check listener.log for more information."
 fi
-
-done
