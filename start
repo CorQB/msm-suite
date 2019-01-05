@@ -24,24 +24,25 @@ echo "Beginning Log"
 if pidof -x "dsbot" >/dev/null; then
     echo "Bot is already running. Everything is OK."
 else
-    echo "Calling node.js..."
-    screen -d -m -S dsbot {exec &> logs/yarn.log; echo date; cd $SHULKERPATH; yarn start}
-    echo "Verifying node started successfully..."
-    
-        if pidof -x "dsbot" >/dev/null; then
-        echo "Bot started correctly."
-        else echo "Bot failed to start: check yarn.log for more information."
-        fi
+    {echo "Calling node.js...";
+    screen -d -m -S dsbot {exec &> logs/yarn.log; echo date; cd $SHULKERPATH; yarn start; done};
+    echo "Verifying node started successfully..."; done}
 fi
+
+if pidof -x "dsbot" >/dev/null; then
+echo "Bot started correctly."
+else echo "Bot failed to start: check yarn.log for more information."
+fi
+
 
 # Start listener
 
 if pidof -x "listener" >/dev/null; then
     echo "Listener is already running. Everything is OK."
 else
-    echo "Starting listener..."
-    screen -d -m -S "listener" {exec &> logs/listener.log; echo date; tail -F /$MCSERVER/logs/latest.log | \
-    grep --line-buffered ": <" | while read x ; do echo -ne $x | \
+    echo "Starting listener..." &&
+    screen -d -m -S "listener" {exec &> logs/listener.log; echo date; tail -F /$MCSERVER/logs/latest.log | 
+    grep --line-buffered ": <" | while read x ; do echo -ne $x | 
     curl -X POST -d @- http://$RCONIP:$RCONPORT/minecraft/hook ; done}
     
         if pidof -x "listener" >/dev/null; then
