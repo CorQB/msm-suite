@@ -49,3 +49,4 @@ else
         else echo "Error: Check listener.log for more information."
         fi
 fi
+done
