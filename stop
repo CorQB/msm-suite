@@ -12,7 +12,8 @@ exec &>> dsbot.log
 
 echo "Halting Discord Bot."
 
-kill pidof -x "listener"
-kill pidof -x "dsbot"
+# pseudo - update with proper kill commands
+# kill "listener"
+# kill "dsbot"
 
 echo "Done. Everything is OK."
