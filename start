@@ -1,4 +1,4 @@
-# Filename: discordbot
+# Filename: start
 # Author: CorQB
 # Created: January 4, 2019
 # Modified: January 4, 2019
@@ -21,11 +21,11 @@ echo "Beginning Log"
 
 # Call node.js
 
-if pidof -x "ds-bot" >/dev/null; then
+if pidof -x "dsbot" >/dev/null; then
     echo "Bot is already running. Everything is OK."
 else
     echo "Calling node.js..."
-    screen -d -m -S ds-bot {exec &> yarn.log; echo date; cd $SHULKERPATH; yarn start}
+    screen -d -m -S dsbot {exec &> yarn.log; echo date; cd $SHULKERPATH; yarn start}
     echo "Verifying node started successfully:"
     
         if pidof -x "dsbot >/dev/null; then
