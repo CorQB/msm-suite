@@ -41,12 +41,15 @@ echo "Beginning Log"
 
 if pidof -x "dsbot" >/dev/null; then
     echo "Bot is already running. Everything is OK."
-else {
+else
     echo "Calling node.js..."
     screen -d -m -S "dsbot" { 
-    exec &> logs/yarn.log ; echo date ; cd $SHULKERPATH ; yarn start ; 
+        exec &> logs/yarn.log
+        echo date
+        cd $SHULKERPATH
+        yarn start 
     }
-} fi
+fi
 
 # Verify node start
 
@@ -60,14 +63,14 @@ fi
 
 if pidof -x "listener" >/dev/null; then
     echo "Listener is already running. Everything is OK."
-else {
+else
     echo "Starting listener..."
     screen -d -m -S "listener" { 
-    exec &> logs/listener.log ; echo date ; tail -F /$MCSERVER/logs/latest.log | 
-    grep --line-buffered ": <" | while read x ; do echo -ne $x | 
+    exec &> logs/listener.log ; echo date ; tail -F /$MCSERVER/logs/latest.log | /
+    grep --line-buffered ": <" | while read x ; do echo -ne $x | /
     curl -X POST -d @- http://$RCONIP:$RCONPORT/minecraft/hook ; done 
     }
-} fi
+fi
 
 # Verify listener start
 
