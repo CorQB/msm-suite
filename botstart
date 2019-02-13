@@ -1,0 +1,80 @@
+#!/bin/bash
+
+# Filename: botstart
+# Author: CorQB
+# Created: January 4, 2019
+# Modified: February 13, 2019
+#
+# This script is used to start two functions, 1) a command which listens to
+# an active log file and reports to 2) a bot which posts given strings from
+# the logfile to a webhook. This script is meant to be used with the repository
+# https://github.com/destruc7i0n/shulker to make bot startup easier to automate.
+# My bash is rusty and this script has not been tested yet. If you test with it,
+# please inform me of your results.
+
+exec &> logs/botstart.log
+echo " Beginning Log"
+
+# Change the values below to match your environment
+
+MCSERVER="/opt/msm/servers/webbcraft"       # Location of your MSM server folder (usually /opt/msm/servers/<yourservername>)
+RCONIP="localhost"                          # Address RCON uses (Set in server.properties file)
+RCONPORT="8000"                             # Port RCON uses (Set in server.properties file)
+SHULKERPATH="/opt/msm/discord/shulker"      # Path to shulker installation (Node portion of bot)
+PATHTOSTART="/opt/msm/bin"                  # Path where THIS script is located
+
+
+# Node-via-Yarn Function
+[function] nodestart()  { cd $SHULKERPATH
+                          yarn start
+                          }
+                
+# Listener Function
+[function] listenerstart() {  tail -F /$MCSERVER/logs/latest.log | grep --line-buffered ": <" | while read x ; do echo -ne $x | \
+                              curl -X POST -d @- http://$RCONIP:$RCONPORT/minecraft/hook ; done
+                              }
+                    
+# Call node.js
+
+if pidof -x "botnode" >/dev/null; then
+    echo " Bot is already running. Everything is OK."
+    
+    echo -n " Would you like to kill the session and begin a new one? (Y/n): "
+    read stopserv
+    if stopserv = "n" = "N"; then
+      echo "Proceeding with current screen session."
+      elif stopserv = "y" = "Y" = ""; then
+      echo "Killing service on port" RCONPORT "..."
+      fuser -k RCONPORT/tcp
+      if pidof -x "botnode" >/devnull; then
+        echo "Success."
+        else echo "Kill switch failed: Attempting to proceed with old session (This shouldn't hurt anything)."
+else
+    echo " Starting a new screen session: "
+    echo " Calling node.js..."
+    screen -d -m -S "dsbot" nodestart
+fi
+
+# Verify node start
+
+if pidof -x "botyarn" >/dev/null; then
+echo " Bot started correctly: Everything OK."
+else echo " Bot failed to start: check yarn.log for more information."
+fi
+
+
+# Start listener
+
+if pidof -x "botlistener" >/dev/null; then
+    echo " Listener is already running. Everything OK."
+else
+    echo " Starting listener..."
+    screen -d -m -S "botlistener" listenerstart
+fi
+
+# Verify listener start
+
+if pidof -x "botlistener" >/dev/null; then
+echo " Listener Started."
+else echo "Error: Check listener.log for more information."
+fi
